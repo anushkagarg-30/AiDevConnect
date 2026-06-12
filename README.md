@@ -10,8 +10,10 @@ AI DevConnect is a full-stack developer networking platform. Users submit projec
 
 | | URL |
 |---|-----|
-| **App** | _Deploy via Render Blueprint — see [Deploy](#deploy-to-render)_ |
-| **API docs** | `https://your-api.onrender.com/docs` |
+| **GitHub** | https://github.com/anushkagarg-30/AiDevConnect |
+| **Deploy** | [Launch on Render](https://dashboard.render.com/blueprint/new?repo=https://github.com/anushkagarg-30/AiDevConnect) |
+| **App** | _Add your Render frontend URL after deploy_ |
+| **API docs** | _Add your Render API URL + `/docs` after deploy_ |
 
 ### Demo accounts (after `docker compose up` or `python scripts/seed_demo.py`)
 
