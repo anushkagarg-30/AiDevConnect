@@ -1,0 +1,51 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Migrations (including CREATE EXTENSION vector) run automatically on API startup.
+
+services:
+  - type: web
+    name: aidevconnect-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    dockerCommand: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aidevconnect-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: MOCK_EMBEDDINGS
+        value: "false"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        fromService:
+          type: web
+          name: aidevconnect-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+
+  - type: web
+    name: aidevconnect-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: aidevconnect-api
+          envVarKey: RENDER_EXTERNAL_URL
+
+databases:
+  - name: aidevconnect-db
+    databaseName: aidevconnect
+    user: aidevconnect
+    plan: basic-256mb
