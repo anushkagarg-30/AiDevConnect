@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from app.models.project import Project
 
 
-class UserRole(str, enum.Enum):
+class UserRole(enum.StrEnum):
     USER = "user"
     ADMIN = "admin"
 

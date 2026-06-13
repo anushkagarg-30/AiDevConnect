@@ -6,6 +6,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from app.db_url import (
     asyncpg_connect_args,
     clean_database_url_for_asyncpg,
+)
+from app.db_url import (
     normalize_database_url as normalize_db_driver_url,
 )
 

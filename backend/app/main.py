@@ -6,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.services.embedding import get_embedding_mode
 from app.database import get_db
 from app.routers import auth, matches, projects, ws
+from app.services.embedding import get_embedding_mode
 
 
 @asynccontextmanager

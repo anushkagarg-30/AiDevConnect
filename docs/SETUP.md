@@ -95,11 +95,11 @@ Then add to README:
 cd /Users/anushkagarg/AiDevConnect
 git add .
 git commit -m "Initial commit: AI DevConnect portfolio project"
-git remote add origin https://github.com/YOUR_USERNAME/AiDevConnect.git
+git remote add origin https://github.com/anushkagarg-30/AiDevConnect.git
 git push -u origin main
 ```
 
-Replace `YOUR_USERNAME` in README CI badge too.
+CI badge in README already points to `anushkagarg-30/AiDevConnect`.
 
 ---
 
@@ -110,8 +110,8 @@ Replace `YOUR_USERNAME` in README CI badge too.
 3. **New** → **Blueprint** → connect your GitHub repo
 4. Set **DATABASE_URL** (Neon) and **GOOGLE_API_KEY** when prompted
 5. Wait for deploy (~10 min; demo seed runs automatically)
-6. Verify `https://your-api.onrender.com/health` shows `pgvector: enabled`
-7. Add live URLs to README
+6. Verify https://aidevconnect-api.onrender.com/health shows `pgvector: enabled`
+7. Live app: https://aidevconnect-frontend.onrender.com
 
 ---
 

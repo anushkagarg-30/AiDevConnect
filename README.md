@@ -10,20 +10,21 @@ AI DevConnect is a full-stack developer networking platform. Users submit projec
 
 | | URL |
 |---|-----|
+| **App** | https://aidevconnect-frontend.onrender.com |
+| **API docs** | https://aidevconnect-api.onrender.com/docs |
+| **Health** | https://aidevconnect-api.onrender.com/health |
 | **GitHub** | https://github.com/anushkagarg-30/AiDevConnect |
 | **Deploy** | [Launch on Render](https://dashboard.render.com/blueprint/new?repo=https://github.com/anushkagarg-30/AiDevConnect) |
-| **App** | _Add your Render frontend URL after deploy_ |
-| **API docs** | _Add your Render API URL + `/docs` after deploy_ |
 
-### Demo accounts (after `docker compose up` or `python scripts/seed_demo.py`)
+### Demo accounts (password `demo1234` for all)
 
-| Email | Password | Project |
-|-------|----------|---------|
-| `alice@demo.com` | `demo1234` | ML Recipe Generator |
-| `bob@demo.com` | `demo1234` | Smart Cooking Assistant |
-| `carol@demo.com` | `demo1234` | DevOps Metrics Dashboard |
+| Cluster | Email | Try |
+|---------|-------|-----|
+| Food / ML | `alice@demo.com` | Find matches on ML Recipe Generator → Bob's cooking project |
+| Justice / social impact | `emma@demo.com` | Juvenile Justice → legal aid + mentorship matches |
+| DevOps | `carol@demo.com` | Metrics dashboard → Dave's GitOps platform |
 
-**Try it:** Log in as Alice → Projects → **Find matches** on her project → Bob's cooking assistant should rank highly → **Connect** → log in as Bob (incognito) to see the real-time notification.
+**Try it:** Open the [live app](https://aidevconnect-frontend.onrender.com) → log in as Alice → Projects → **Find matches** → **Connect** → log in as Bob (incognito) for the real-time notification.
 
 ## Screenshots
 
