@@ -18,5 +18,10 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // Data-fetch-on-mount is intentional; rule flags async loaders that set loading state.
+      'react-hooks/set-state-in-effect': 'off',
+      'react-refresh/only-export-components': ['warn', { allowExportNames: ['useAuth'] }],
+    },
   },
 ])

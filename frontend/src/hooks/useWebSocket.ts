@@ -6,7 +6,10 @@ export function useWebSocket(
   onMessage: (message: { type: string; [key: string]: unknown }) => void,
 ) {
   const onMessageRef = useRef(onMessage);
-  onMessageRef.current = onMessage;
+
+  useEffect(() => {
+    onMessageRef.current = onMessage;
+  }, [onMessage]);
 
   useEffect(() => {
     if (!token) return;
