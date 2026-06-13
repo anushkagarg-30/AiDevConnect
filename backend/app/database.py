@@ -18,6 +18,9 @@ _engine_kwargs: dict = {
 }
 if _use_null_pool():
     _engine_kwargs["poolclass"] = NullPool
+else:
+    _engine_kwargs["pool_size"] = 20
+    _engine_kwargs["max_overflow"] = 30
 
 engine = create_async_engine(settings.sqlalchemy_database_url, **_engine_kwargs)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)

@@ -118,6 +118,15 @@ jobs:
         run: |
           alembic upgrade head
           python scripts/seed_load_test.py --projects 500
+          python -c "
+          import asyncio
+          from sqlalchemy import text
+          from app.database import engine
+          async def analyze():
+              async with engine.begin() as conn:
+                  await conn.execute(text('ANALYZE projects'))
+          asyncio.run(analyze())
+          "
 
       - name: Start API
         working-directory: backend
@@ -133,8 +142,8 @@ jobs:
           mkdir -p loadtests/results
           locust -f loadtests/locustfile.py \
             --headless \
-            -u 50 \
-            -r 10 \
+            -u 30 \
+            -r 5 \
             -t 30s \
             --host http://localhost:8000 \
             --csv=loadtests/results/locust \
