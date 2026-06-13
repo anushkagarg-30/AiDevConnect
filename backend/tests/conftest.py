@@ -3,6 +3,7 @@ import os
 # Must run before app.settings is loaded so tests use mock-friendly thresholds.
 os.environ.setdefault("ENVIRONMENT", "test")
 os.environ.setdefault("MATCH_MIN_SIMILARITY", "0")
+os.environ.setdefault("USE_NULL_POOL", "true")
 
 import pytest
 from httpx import ASGITransport, AsyncClient
