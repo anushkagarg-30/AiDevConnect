@@ -11,6 +11,7 @@ env:
   DATABASE_URL: postgresql+asyncpg://aidevconnect:aidevconnect@localhost:5432/aidevconnect
   SECRET_KEY: ci-test-secret-key
   MOCK_EMBEDDINGS: "true"
+  MATCH_MIN_SIMILARITY: "0"
   CORS_ORIGINS: http://localhost:5173
 
 jobs:

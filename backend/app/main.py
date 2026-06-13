@@ -37,8 +37,18 @@ app.include_router(matches.router, prefix="/api/v1")
 app.include_router(ws.router, prefix="/api/v1")
 
 
+@app.get("/")
+async def root() -> dict[str, str]:
+    return {
+        "service": "AI DevConnect API",
+        "health": "/health",
+        "docs": "/docs",
+        "api": "/api/v1",
+    }
+
+
 @app.get("/health")
-async def health(db: AsyncSession = Depends(get_db)) -> dict[str, str]:
+async def health(db: AsyncSession = Depends(get_db)) -> dict[str, str | float]:
     try:
         await db.execute(text("SELECT 1"))
     except Exception as exc:
@@ -47,8 +57,15 @@ async def health(db: AsyncSession = Depends(get_db)) -> dict[str, str]:
             detail="Database unavailable",
         ) from exc
 
+    pgvector_result = await db.execute(
+        text("SELECT extversion FROM pg_extension WHERE extname = 'vector'")
+    )
+    pgvector_version = pgvector_result.scalar_one_or_none()
+
     return {
         "status": "ok",
         "database": "connected",
+        "pgvector": "enabled" if pgvector_version else "missing",
         "embedding_mode": get_embedding_mode(),
+        "match_min_similarity": settings.match_min_similarity,
     }

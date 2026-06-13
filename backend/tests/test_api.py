@@ -126,3 +126,4 @@ async def test_health_includes_database(client):
     body = response.json()
     assert body["status"] == "ok"
     assert body["database"] == "connected"
+    assert body["pgvector"] == "enabled"

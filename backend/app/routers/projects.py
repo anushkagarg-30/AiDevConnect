@@ -135,6 +135,7 @@ async def find_matches(
 
     distance = Project.embedding.cosine_distance(source.embedding)
     similarity = (1 - distance).label("similarity")
+    min_similarity = settings.match_min_similarity
 
     already_requested = select(MatchRequest.project_id).where(
         MatchRequest.requester_id == current_user.id,
@@ -150,6 +151,7 @@ async def find_matches(
         .where(Project.user_id != current_user.id)
         .where(Project.id != project_id)
         .where(Project.id.not_in(already_requested))
+        .where((1 - distance) >= min_similarity)
         .order_by(distance)
         .limit(limit)
     )

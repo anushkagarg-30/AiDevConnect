@@ -105,15 +105,13 @@ Replace `YOUR_USERNAME` in README CI badge too.
 
 ## Step 7 — Deploy live demo (optional but recommended)
 
-1. Go to https://dashboard.render.com/
-2. **New** → **Blueprint** → connect your GitHub repo
-3. On the API service, set **OPENAI_API_KEY** (get one at platform.openai.com)
-4. Wait for deploy (~10 min)
-5. Run demo seed on production (Render API shell):
-   ```bash
-   python scripts/seed_demo.py
-   ```
-6. Add live URLs to README
+1. Create a **Neon** database with pgvector — see [DATABASE.md](DATABASE.md)
+2. Go to https://dashboard.render.com/
+3. **New** → **Blueprint** → connect your GitHub repo
+4. Set **DATABASE_URL** (Neon) and **GOOGLE_API_KEY** when prompted
+5. Wait for deploy (~10 min; demo seed runs automatically)
+6. Verify `https://your-api.onrender.com/health` shows `pgvector: enabled`
+7. Add live URLs to README
 
 ---
 

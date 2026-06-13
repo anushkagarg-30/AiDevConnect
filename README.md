@@ -98,7 +98,7 @@ LIMIT 10;
 |-------|-------------|
 | Backend | FastAPI, SQLAlchemy, Alembic, JWT |
 | Database | PostgreSQL 16, pgvector, ivfflat index |
-| Embeddings | OpenAI `text-embedding-3-small` (1536 dims) |
+| Embeddings | Gemini `gemini-embedding-001` (1536 dims) |
 | Frontend | React 19, TypeScript, Tailwind CSS, Vite |
 | Real-time | FastAPI WebSockets |
 | Infra | Docker Compose, GitHub Actions, Render |
@@ -118,7 +118,15 @@ docker compose up --build
 | API docs | http://localhost:8000/docs |
 | Health | http://localhost:8000/health |
 
-Demo users are seeded automatically on startup.
+Demo users are seeded on startup (password `demo1234` for all):
+
+| Cluster | Logins | What to try |
+|---------|--------|-------------|
+| Food / ML | `alice@demo.com`, `bob@demo.com` | Alice's recipe project → Bob's cooking assistant (~85%+ match) |
+| DevOps | `carol@demo.com`, `dave@demo.com` | Carol's metrics dashboard → Dave's GitOps platform |
+| Justice / social impact | `emma@demo.com`, `james@demo.com`, `nina@demo.com` | Emma's juvenile justice platform → legal aid + mentorship projects |
+
+Unrelated domains are filtered out (minimum **72%** similarity via `MATCH_MIN_SIMILARITY`).
 
 ## Embedding modes
 
@@ -142,6 +150,7 @@ Check `/health` — response includes `"embedding_mode": `"mock"`, `"gemini"`, o
 | `OPENAI_API_KEY` | Only when `EMBEDDING_PROVIDER=openai` |
 | `MOCK_EMBEDDINGS` | `true` skips embedding APIs (local dev) |
 | `EMBEDDING_PROVIDER` | `gemini` (default) or `openai` |
+| `MATCH_MIN_SIMILARITY` | Minimum cosine similarity to show a match (default `0.72`) |
 | `VITE_API_URL` | Frontend API base URL (production builds) |
 
 See `.env.example` and `frontend/.env.example` for full list.
@@ -157,13 +166,16 @@ Seeds 500 projects, runs 50 concurrent users for 30s, asserts **p95 < 200ms** on
 ## Deploy to Render
 
 1. Push this repo to GitHub
-2. [Launch Blueprint](https://dashboard.render.com/blueprint/new?repo=https://github.com/anushkagarg-30/AiDevConnect)
-3. Set `GOOGLE_API_KEY` on the API service (from [Google AI Studio](https://aistudio.google.com/apikey))
-4. Migrations + demo seed run automatically on API startup
+2. Create a **Neon** Postgres database with pgvector ([guide](docs/DATABASE.md)) — free and permanent (Render free Postgres expires after 30 days)
+3. [Launch Blueprint](https://dashboard.render.com/blueprint/new?repo=https://github.com/anushkagarg-30/AiDevConnect)
+4. When prompted, set:
+   - `DATABASE_URL` — Neon connection string (`postgresql://...?sslmode=require`)
+   - `GOOGLE_API_KEY` — from [Google AI Studio](https://aistudio.google.com/apikey)
+5. Migrations + clustered demo seed run automatically on API startup
 
-**Why Render asked for paid?** The blueprint originally used `basic-256mb` Postgres (~$6/mo). It now uses the **free** database plan ($0, expires after 30 days). For a permanent demo, upgrade the DB in the Render dashboard or use [Neon](https://neon.tech) (free pgvector) and set `DATABASE_URL` manually.
+`render.yaml` provisions API (Docker) and static frontend. `CORS_ORIGINS` is wired automatically.
 
-`render.yaml` provisions API (Docker), static frontend, and Postgres. `DATABASE_URL` and `CORS_ORIGINS` are wired automatically.
+Full database setup: [docs/DATABASE.md](docs/DATABASE.md)
 
 ## Project structure
 

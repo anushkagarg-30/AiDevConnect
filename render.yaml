@@ -1,5 +1,6 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
-# Migrations (including CREATE EXTENSION vector) run automatically on API startup.
+# Production DB: use Neon (free, permanent pgvector). See docs/DATABASE.md
+# Migrations + demo seed run automatically on API startup.
 
 services:
   - type: web
@@ -14,9 +15,7 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: aidevconnect-db
-          property: connectionString
+        sync: false
       - key: SECRET_KEY
         generateValue: true
       - key: MOCK_EMBEDDINGS
@@ -44,9 +43,4 @@ services:
           name: aidevconnect-api
           envVarKey: RENDER_EXTERNAL_URL
 
-databases:
-  - name: aidevconnect-db
-    databaseName: aidevconnect
-    user: aidevconnect
-    # Free tier — $0 but expires after 30 days. Use `basic-256mb` (~$6/mo) for permanent hosting.
-    plan: free
+# No Render Postgres — use Neon pgvector (docs/DATABASE.md). Paste DATABASE_URL when deploying.

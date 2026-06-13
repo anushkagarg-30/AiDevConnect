@@ -87,7 +87,8 @@ export function ProjectMatches() {
       <div className="mt-4 mb-8">
         <h1 className="text-3xl font-bold text-white">Matches for "{sourceProject.title}"</h1>
         <p className="mt-2 text-slate-400">
-          Ranked by semantic similarity using pgvector cosine distance.
+          Ranked by Gemini embeddings + pgvector cosine similarity. Only projects above the
+          similarity threshold are shown.
         </p>
       </div>
 
@@ -99,7 +100,16 @@ export function ProjectMatches() {
 
       {matches.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-700 p-12 text-center">
-          <p className="text-slate-400">No similar projects found yet. Check back as more users join.</p>
+          <p className="text-slate-300 font-medium">No strong matches yet</p>
+          <p className="mt-2 text-sm text-slate-400">
+            We only surface collaborators with high semantic similarity (typically 72%+).
+            Projects in unrelated domains — e.g. cooking vs. legal tech — are intentionally hidden.
+          </p>
+          <p className="mt-4 text-sm text-slate-500">
+            Demo: log in as <span className="text-slate-300">emma@demo.com</span> for justice/social
+            impact matches, or <span className="text-slate-300">alice@demo.com</span> for food/ML
+            matches.
+          </p>
         </div>
       ) : (
         <div className="space-y-4">

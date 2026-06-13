@@ -3,6 +3,12 @@ from typing import Literal, Self
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.db_url import (
+    asyncpg_connect_args,
+    clean_database_url_for_asyncpg,
+    normalize_database_url as normalize_db_driver_url,
+)
+
 INSECURE_SECRET_KEYS = {
     "dev-secret-key-change-in-production",
     "change-me-to-a-long-random-string",
@@ -24,14 +30,23 @@ class Settings(BaseSettings):
     embedding_provider: Literal["gemini", "openai"] = "gemini"
     embedding_model: str = "gemini-embedding-001"
     embedding_dimensions: int = 1536
+    match_min_similarity: float = 0.72
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     @field_validator("database_url", mode="before")
     @classmethod
-    def normalize_database_url(cls, value: str) -> str:
-        if isinstance(value, str) and value.startswith("postgresql://") and "+asyncpg" not in value:
-            return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+    def validate_database_url(cls, value: str) -> str:
+        if isinstance(value, str):
+            return normalize_db_driver_url(value)
         return value
+
+    @property
+    def sqlalchemy_database_url(self) -> str:
+        return clean_database_url_for_asyncpg(self.database_url)
+
+    @property
+    def database_connect_args(self) -> dict:
+        return asyncpg_connect_args(self.database_url)
 
     @property
     def cors_origins_list(self) -> list[str]:

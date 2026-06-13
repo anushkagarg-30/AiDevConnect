@@ -84,9 +84,13 @@ export function Login() {
         </form>
 
         <p className="mt-4 text-center text-sm text-slate-400">
-          Demo: <span className="text-slate-300">alice@demo.com</span> /{" "}
-          <span className="text-slate-300">demo1234</span>
+          Demo (password <span className="text-slate-300">demo1234</span> for all):
         </p>
+        <ul className="mt-2 space-y-1 text-center text-xs text-slate-500">
+          <li><span className="text-slate-400">alice@demo.com</span> — food / ML matching</li>
+          <li><span className="text-slate-400">emma@demo.com</span> — justice / social impact</li>
+          <li><span className="text-slate-400">carol@demo.com</span> — DevOps / infra</li>
+        </ul>
 
         <p className="mt-2 text-center text-sm text-slate-400">
           No account?{" "}
