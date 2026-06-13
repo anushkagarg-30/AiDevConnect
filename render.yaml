@@ -49,4 +49,5 @@ databases:
   - name: aidevconnect-db
     databaseName: aidevconnect
     user: aidevconnect
-    plan: basic-256mb
+    # Free tier — $0 but expires after 30 days. Use `basic-256mb` (~$6/mo) for permanent hosting.
+    plan: free
