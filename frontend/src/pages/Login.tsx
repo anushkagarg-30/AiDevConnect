@@ -3,25 +3,34 @@ import { Link, Navigate } from "react-router-dom";
 import { ApiError } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 
+function AuthLoadingScreen() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+    </div>
+  );
+}
+
 export function Login() {
-  const { login, user } = useAuth();
+  const { login, user, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
+  if (loading) return <AuthLoadingScreen />;
   if (user) return <Navigate to="/" replace />;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setSubmitting(true);
     try {
       await login(email, password);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Login failed");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   }
 
@@ -67,14 +76,19 @@ export function Login() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitting}
             className="mt-6 w-full rounded-lg bg-brand-600 py-2.5 font-medium text-white transition hover:bg-brand-500 disabled:opacity-50"
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {submitting ? "Signing in..." : "Sign in"}
           </button>
         </form>
 
         <p className="mt-4 text-center text-sm text-slate-400">
+          Demo: <span className="text-slate-300">alice@demo.com</span> /{" "}
+          <span className="text-slate-300">demo1234</span>
+        </p>
+
+        <p className="mt-2 text-center text-sm text-slate-400">
           No account?{" "}
           <Link to="/register" className="text-brand-400 hover:text-brand-300">
             Create one

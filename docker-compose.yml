@@ -23,6 +23,16 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)\"",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
     volumes:
       - ./backend:/app
     command: >
@@ -35,7 +45,8 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     volumes:
       - ./frontend:/app
       - /app/node_modules

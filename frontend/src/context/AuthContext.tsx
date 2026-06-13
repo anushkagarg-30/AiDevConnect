@@ -7,11 +7,13 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { api } from "../api/client";
+import { api, ApiError } from "../api/client";
 import type { Notification, User } from "../types";
 import { useWebSocket } from "../hooks/useWebSocket";
 
 const TOKEN_KEY = "aidevconnect_token";
+const BOOTSTRAP_MAX_ATTEMPTS = 10;
+const BOOTSTRAP_RETRY_MS = 1000;
 
 interface AuthContextValue {
   user: User | null;
@@ -55,6 +57,26 @@ function wsMessageToNotification(message: { type: string; [key: string]: unknown
   }
 }
 
+async function fetchMeWithRetry(token: string): Promise<User> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < BOOTSTRAP_MAX_ATTEMPTS; attempt++) {
+    try {
+      return await api.me(token);
+    } catch (err) {
+      lastError = err;
+      if (err instanceof ApiError && err.status === 401) {
+        throw err;
+      }
+      if (attempt < BOOTSTRAP_MAX_ATTEMPTS - 1) {
+        await new Promise((resolve) => setTimeout(resolve, BOOTSTRAP_RETRY_MS));
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
@@ -79,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       return;
     }
-    const me = await api.me(token);
+    const me = await fetchMeWithRetry(token);
     setUser(me);
   }, [token]);
 
@@ -91,14 +113,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
         return;
       }
+
+      setLoading(true);
       try {
-        const me = await api.me(token);
+        const me = await fetchMeWithRetry(token);
         if (!cancelled) setUser(me);
-      } catch {
-        localStorage.removeItem(TOKEN_KEY);
-        if (!cancelled) {
-          setToken(null);
-          setUser(null);
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 401) {
+          localStorage.removeItem(TOKEN_KEY);
+          if (!cancelled) {
+            setToken(null);
+            setUser(null);
+          }
         }
       } finally {
         if (!cancelled) setLoading(false);

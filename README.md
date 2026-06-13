@@ -125,9 +125,10 @@ Demo users are seeded automatically on startup.
 | Mode | When | Matching quality |
 |------|------|------------------|
 | **Mock** | `MOCK_EMBEDDINGS=true` (local default) | Deterministic hashes — good for UI/API testing |
-| **OpenAI** | `MOCK_EMBEDDINGS=false` + `OPENAI_API_KEY` | Real semantic similarity (required for production) |
+| **Gemini** | `MOCK_EMBEDDINGS=false` + `GOOGLE_API_KEY` | Real semantic similarity (default for production) |
+| **OpenAI** | `EMBEDDING_PROVIDER=openai` + `OPENAI_API_KEY` | Alternative cloud embeddings |
 
-Check `/health` — response includes `"embedding_mode": "mock"` or `"openai"`.
+Check `/health` — response includes `"embedding_mode": `"mock"`, `"gemini"`, or `"openai"`.
 
 ## Environment variables
 
@@ -137,8 +138,10 @@ Check `/health` — response includes `"embedding_mode": "mock"` or `"openai"`.
 | `DATABASE_URL` | PostgreSQL URL (`postgresql+asyncpg://...`) |
 | `SECRET_KEY` | JWT secret (min 32 chars in production) |
 | `CORS_ORIGINS` | Comma-separated allowed origins |
-| `OPENAI_API_KEY` | Required when `MOCK_EMBEDDINGS=false` |
-| `MOCK_EMBEDDINGS` | `true` skips OpenAI (local dev) |
+| `GOOGLE_API_KEY` | Gemini API Studio key when `EMBEDDING_PROVIDER=gemini` |
+| `OPENAI_API_KEY` | Only when `EMBEDDING_PROVIDER=openai` |
+| `MOCK_EMBEDDINGS` | `true` skips embedding APIs (local dev) |
+| `EMBEDDING_PROVIDER` | `gemini` (default) or `openai` |
 | `VITE_API_URL` | Frontend API base URL (production builds) |
 
 See `.env.example` and `frontend/.env.example` for full list.
@@ -153,10 +156,12 @@ Seeds 500 projects, runs 50 concurrent users for 30s, asserts **p95 < 200ms** on
 
 ## Deploy to Render
 
-1. Push to GitHub
-2. [Render Dashboard](https://dashboard.render.com/) → **New Blueprint** → connect repo
-3. Set `OPENAI_API_KEY` on the API service (production uses real embeddings)
-4. Migrations run automatically on deploy (including `CREATE EXTENSION vector`)
+1. Push this repo to GitHub
+2. [Launch Blueprint](https://dashboard.render.com/blueprint/new?repo=https://github.com/anushkagarg-30/AiDevConnect)
+3. Set `GOOGLE_API_KEY` on the API service (from [Google AI Studio](https://aistudio.google.com/apikey))
+4. Migrations + demo seed run automatically on API startup
+
+**Why Render asked for paid?** The blueprint originally used `basic-256mb` Postgres (~$6/mo). It now uses the **free** database plan ($0, expires after 30 days). For a permanent demo, upgrade the DB in the Render dashboard or use [Neon](https://neon.tech) (free pgvector) and set `DATABASE_URL` manually.
 
 `render.yaml` provisions API (Docker), static frontend, and Postgres. `DATABASE_URL` and `CORS_ORIGINS` are wired automatically.
 

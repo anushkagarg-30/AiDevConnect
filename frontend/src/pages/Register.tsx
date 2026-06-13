@@ -3,26 +3,35 @@ import { Link, Navigate } from "react-router-dom";
 import { ApiError } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 
+function AuthLoadingScreen() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+    </div>
+  );
+}
+
 export function Register() {
-  const { register, user } = useAuth();
+  const { register, user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
+  if (authLoading) return <AuthLoadingScreen />;
   if (user) return <Navigate to="/" replace />;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setSubmitting(true);
     try {
       await register(email, username, password);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Registration failed");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   }
 
@@ -81,10 +90,10 @@ export function Register() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitting}
             className="mt-6 w-full rounded-lg bg-brand-600 py-2.5 font-medium text-white transition hover:bg-brand-500 disabled:opacity-50"
           >
-            {loading ? "Creating account..." : "Create account"}
+            {submitting ? "Creating account..." : "Create account"}
           </button>
         </form>
 

@@ -18,9 +18,11 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://aidevconnect:aidevconnect@localhost:5432/aidevconnect"
     secret_key: str = "dev-secret-key-change-in-production"
     openai_api_key: str = ""
+    google_api_key: str = ""
     mock_embeddings: bool = True
     access_token_expire_minutes: int = 30
-    embedding_model: str = "text-embedding-3-small"
+    embedding_provider: Literal["gemini", "openai"] = "gemini"
+    embedding_model: str = "gemini-embedding-001"
     embedding_dimensions: int = 1536
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
@@ -43,8 +45,15 @@ class Settings(BaseSettings):
         if self.secret_key in INSECURE_SECRET_KEYS or len(self.secret_key) < 32:
             raise ValueError("SECRET_KEY must be a random string of at least 32 characters in production")
 
-        if not self.mock_embeddings and not self.openai_api_key:
-            raise ValueError("OPENAI_API_KEY is required when MOCK_EMBEDDINGS=false in production")
+        if not self.mock_embeddings:
+            if self.embedding_provider == "gemini" and not self.google_api_key:
+                raise ValueError(
+                    "GOOGLE_API_KEY is required when EMBEDDING_PROVIDER=gemini and MOCK_EMBEDDINGS=false"
+                )
+            if self.embedding_provider == "openai" and not self.openai_api_key:
+                raise ValueError(
+                    "OPENAI_API_KEY is required when EMBEDDING_PROVIDER=openai and MOCK_EMBEDDINGS=false"
+                )
 
         if not self.cors_origins_list:
             raise ValueError("CORS_ORIGINS must list at least one allowed origin in production")

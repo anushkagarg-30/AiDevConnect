@@ -8,6 +8,11 @@ const navItems = [
   { to: "/matches", label: "Matches" },
 ];
 
+function isNavActive(path: string, pathname: string): boolean {
+  if (path === "/") return pathname === "/";
+  return pathname === path || pathname.startsWith(`${path}/`);
+}
+
 export function Layout() {
   const { user, logout, notifications, dismissNotification } = useAuth();
   const location = useLocation();
@@ -25,7 +30,7 @@ export function Layout() {
 
           <nav className="hidden items-center gap-1 sm:flex">
             {navItems.map((item) => {
-              const active = location.pathname === item.to;
+              const active = isNavActive(item.to, location.pathname);
               return (
                 <Link
                   key={item.to}
@@ -55,7 +60,7 @@ export function Layout() {
 
         <nav className="flex gap-1 overflow-x-auto border-t border-slate-800/60 px-4 py-2 sm:hidden">
           {navItems.map((item) => {
-            const active = location.pathname === item.to;
+            const active = isNavActive(item.to, location.pathname);
             return (
               <Link
                 key={item.to}

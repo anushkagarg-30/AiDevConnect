@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.services.embedding import get_embedding_mode
 from app.database import get_db
 from app.routers import auth, matches, projects, ws
 
@@ -46,9 +47,8 @@ async def health(db: AsyncSession = Depends(get_db)) -> dict[str, str]:
             detail="Database unavailable",
         ) from exc
 
-    embedding_mode = "mock" if settings.mock_embeddings or not settings.openai_api_key else "openai"
     return {
         "status": "ok",
         "database": "connected",
-        "embedding_mode": embedding_mode,
+        "embedding_mode": get_embedding_mode(),
     }
